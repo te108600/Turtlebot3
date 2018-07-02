@@ -1,0 +1,43 @@
+＃＃Turtlebot3操作方法＃＃
+1.RemotePCを起動
+
+2.RemotePC上で
+　＄roscore
+　を実行。
+ 
+3.Turtlebot3にモニター、マウス、キーボードを接続し起動。
+
+4.Tuetlebot3上で
+　$ roslaunch turtlebot3_bringup turtlebot3_robot.launch
+ を実行。
+ 
+5.RemotePC上で
+　$ export TURTLEBOT3_MODEL=waffle_pi
+　$ roslaunch turtlebot3_bringup turtlebot3_remote.launch
+　$ rosrun rviz rviz -d `rospack find turtlebot3_description`/rviz/model.rviz
+ を実行。Rviz上でLiDARが起動しているのを確認する。
+ 
+6.RemotePC上からキーボードでTurtlebot3を操作できるようにする。
+　$ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+ を実行。実行したターミナルをアクティブにした状態で、w,s,a,d,xキーで操作できる。
+ ※ゲームパッドで操作したい場合は、ゲームパッド中央のPOWER/MODEボタンを長押しし、
+ 　青色になったら操作できる。ただし操作しにくく暴走しやすいのでおすすめしない。
+  
+7.SLAMでマップを作成する。
+　RemotePC上で
+  $ roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=gmapping
+  を実行する。Rvizでマップが生成されているのがわかる。６の手順でTurtlebot3を操作して、
+  範囲内の地図を作成する。作成し終わったら、
+  $ rosrun map_server map_saver -f ~/map
+  で地図を保存する。保存された地図は、ホームディレクトリにあるmap.pgmとmap.yamlにある。
+  
+ 8.Navigationを実行する。
+ 　RemotePC上で
+   $ roslaunch turtlebot3_navigation turtlebot3_navigation.launch map_file:=$HOME/map.yaml
+   を実行する。Rviz上で7で作成した地図が写っているような画面になる。
+   まず、上部メニューにある2D Pose Estimateで地図上に現在位置と向きをマウスで指定する。
+   これにより、背景の地図と現在のセンサーの位置がざっくりと合うようになる。（わかりにくい日本語ですいません）
+   次に、Turtlebot3を6の方法で操作する。これにより、背景の地図との位置合わせが自動に行われる。
+   最後に、Navigationの目標地点を設定する。
+   メニュー上部の2D Nav Goal を押して、マウスで目標地点の位置と向きを指示する。
+   これにより、自動で障害物を避けながら移動できるようになる。
